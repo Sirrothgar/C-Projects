@@ -1,0 +1,118 @@
+/*Create a C++ console application that will storeand retrieve namesand addresses in a text file.
+The program should do the following.
+1.	It should accept a series of names and addresses from the console.
+2.	The user's input should be written to a text file in the CSV format described in the lesson, but do not include the field names in the first row of the file. Use a delimiter to separate the records.
+3.	Read the records from the text file, and display them in a user - friendly format.
+4.	Provide a menu to allow the user to append records to the file, display the records, or exit the application.
+Build upon the code below to complete the assignment.*/
+
+//Specification: Append and display records in a address database 
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+void menu(void);
+void writeData(void);
+void readData(void);
+
+const char FileName[] = "TestAddress.txt";
+int main() {
+	menu();
+	return 0;
+} //end main
+void menu(void) {
+	//allow user to choose to append records, display records or exit the program
+	ofstream outfile("TestAddress.txt"); // creates file to save output
+	string name, city, state, street, recordNum, zip;
+	string cont = "Y";
+	ifstream infile;
+	
+	while (cont != "Q" || cont != "q")
+	{
+		cout << "Please enter record #: ";
+		getline(cin, recordNum);
+		cout << "Please enter Name: ";
+		getline(cin, name);
+		cout << "Please enter street: ";
+		getline(cin, street);
+		cout << "Please enter city: ";
+		getline(cin, city);
+		cout << "Please enter state: ";
+		getline(cin, state);
+		cout << "Please enter zip code: ";
+		cin >> zip;
+		outfile << recordNum << " # " << name << " # " << street << " # " << city << " # " << state << " # " << zip << endl;
+		cin.ignore();
+		cout << "Do you want to continue? Press Q to quit.";
+		getline(cin, cont);
+	}
+	system("pause");
+	outfile.close();
+} //end menu
+	
+	void writeData(void) {
+	//Write the Address Info to a file
+	//loop while user still has data to write to file
+	//eg outStream<<name<<”#”; //where # is the delimiter
+		
+		ifstream myFile("TestAdress.txt");
+
+		if (myFile.is_open())
+		{
+			while (myFile, cin)	{}
+			myFile.close();
+		}
+		else cout << "Please enter data.";
+	}//end write data
+	void readData(void)
+	{
+		//read data from a file
+		//use the split function to break a
+		//deliminated line of text into fields
+		ifstream inMyStream(FileName);
+
+		if (inMyStream.is_open())
+		{
+
+			//set character to use as a line between record displays	
+			string recBreaks = "";
+			recBreaks.assign(20, '-');
+
+			int fieldCount = 0;  //keep track of the number of fields read
+			int recordCount = 1; //keep track of the number of records read
+
+			//read the first field
+			fieldCount = 1;
+			string fieldBuffer;
+			getline(inMyStream, fieldBuffer, '#');
+
+			while (!inMyStream.eof()) {
+
+				//display the field
+				switch (fieldCount) {
+				case 1:
+					cout << recBreaks << endl;
+					cout << "record # " << recordCount << endl;
+					cout << "Name...." << fieldBuffer << endl; break;
+				case 2:
+					cout << "Street.." << fieldBuffer << endl; break;
+				case 3:
+					cout << "City...." << fieldBuffer << endl; break;
+				case 4:
+					cout << "State..." << fieldBuffer << endl; break;
+				case 5:
+					cout << "Zip....." << fieldBuffer << endl;
+					fieldCount = 0;
+					recordCount++; 	break;
+				}
+
+				//read the next field
+				getline(inMyStream, fieldBuffer, '#');
+				fieldCount++;
+			}
+			cout << recBreaks << endl;
+
+			inMyStream.close();
+
+		}//end read data
+	}
