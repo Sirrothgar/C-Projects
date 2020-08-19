@@ -1,0 +1,141 @@
+//RetailItem Class definition
+//RetailItem.h
+#include <string>
+#pragma once
+using namespace std;
+
+class retailItem
+{
+private:
+	string description;
+	int unitsOnHand;
+	double price;
+public:
+	retailItem();  //default constructor
+	retailItem(string desc, int units, double prc);  //constructor
+	~retailItem();  //destructor
+
+	//getter functions
+	string getDescription();
+	int getUnitsOnHand();
+	double getPrice();
+
+	//setter functions
+	void setDescription(string desc);
+	void setUnitsOnHand(int units);
+	void setPrice(double prc);
+};
+
+//Implementation of RetailItem class
+//RetailItem.cpp
+#include "RetailItem.h"
+
+//getter functions
+string retailItem::getDescription()
+{
+	return description;
+}
+int retailItem::getUnitsOnHand()
+{
+	return unitsOnHand;
+}
+double retailItem::getPrice() 
+{
+	return price;
+}
+
+//setter functions
+void retailItem::setDescription(string desc)
+{
+	description = desc;
+}
+void retailItem::setUnitsOnHand(int units)
+{
+	unitsOnHand = units;
+}
+void retailItem::setPrice(double prc)
+{
+	price = prc;
+}
+
+retailItem::retailItem()  //default constructor
+{
+	description = "n/a";
+	unitsOnHand = 0;
+	price = 0.0;
+}
+retailItem::retailItem(string desc, int units, double prc)  //constructor
+{
+	description = desc;
+	unitsOnHand = units;
+	price = prc;
+}
+retailItem::~retailItem() //destructor
+{
+
+}
+
+//Main.cpp
+#include <iostream>
+#include "RetailItem.h"
+#include <string>
+#include <iomanip>
+
+void main()
+{
+    //retailItem Objects
+    retailItem r1;
+    retailItem r2("Jeans", 40, 34.95);
+    retailItem r3("Long Sleeve Shirt", 20, 24.95);
+
+    //declare vairable
+    string description;
+    int unitsOnHand;
+    double price;
+
+    //Ask user for first item
+    cout << "Welcome to the Retail Store." << endl;
+    cout << "Price of item must be above 0." << endl;
+    cout << "Please enter the price for item #1: ";
+    cin >> price;
+    cout << setprecision(2) << fixed << endl;
+    while (price <= 0)
+    {
+        cout << "Price not above 0. Please enter price again: ";
+        cin >> price;
+    }
+    cout << "Inventory of item must be above 0." << endl;
+    cout << "Please enter the price for item #1: ";
+    cin >> unitsOnHand;
+    while (unitsOnHand <= 0)
+    {
+        cout << "Inventory not above 0. Please enter inventory again: ";
+        cin >> unitsOnHand;
+    }
+    cout << "Please enter the description of item #1: ";
+    cin >> description;
+    cout << endl;
+
+    //store the data in an object
+    r1.setDescription(description);
+    r1.setUnitsOnHand(unitsOnHand);
+    r1.setPrice(price);
+
+    //Display the items
+    cout << "Display all items" << endl;
+    cout << "Description: " << r1.getDescription() << endl;
+    cout << "Units on Hand: " << r1.getUnitsOnHand() << endl;
+    cout << "Price: " << r1.getPrice() << endl;
+
+    cout << "Description: " << r2.getDescription() << endl;
+    cout << "Units on Hand: " << r2.getUnitsOnHand() << endl;
+    cout << "Price: " << r2.getPrice() << endl;
+
+    cout << "Description: " << r3.getDescription() << endl;
+    cout << "Units on Hand: " << r3.getUnitsOnHand() << endl;
+    cout << "Price: " << r3.getPrice() << endl;
+
+    cout << "Display of Total Inventory" << endl;
+    cout << "Total Inventory is: " << r1.getUnitsOnHand() + r2.getUnitsOnHand() + r3.getUnitsOnHand() << endl;
+    system("pause");
+}
