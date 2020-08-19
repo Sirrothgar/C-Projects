@@ -1,0 +1,172 @@
+#include <iostream>
+#include <conio.h>
+#include <string>
+#include <fstream>  // Read/write to files
+#include <ctime>     // Time (0)
+#include <iomanip>  // Setprecision()
+
+using namespace std;
+
+//Prototypes
+void deposit(double* ptrBalance);
+void withdrawal(double* ptrBalance, float dailyLimit);  // Overload method - this version does not take withdrawal amount
+void withdrawal(double* ptrBalance, float dailyLimit, float amount);    // Overload method that takes withdrawal amount
+
+int main()
+{
+    // Create constant values -- cannot be changed
+    const int EXIT_VALVE = 5;
+    const float DAILY_LIMIT = 400.0f;
+    const string FILENAME = "Account.txt";
+
+    // Create balance variable
+    double balance = 0.0;
+
+    // Look for the starting balance; otherwise generate a random starting balance
+    ifstream iFile(FILENAME.c_str());
+    if (iFile.is_open())
+    {
+        // Did the file open? If so, read the balance
+        iFile >> balance;
+        iFile.close();
+    }
+    else
+    {
+        // If the file did not open or does
+        // Random number for the starting balance
+        srand((unsigned int) time(0));
+        const int MIN = 1000;
+        const int MAX = 10000;
+        balance = rand() % (MAX - MIN + 1) + MIN;
+    }
+
+    cout << fixed << setprecision(2) << "Starting Balance: $" << balance << endl;
+
+    // Create a pointer and set it to the balance variable location
+    double* ptrBalance = &balance;  // & means "address of"
+
+    // Pause before we clear
+    cout << "\nPress any key to continue...";
+    _getch();
+
+    // Create a loop variable before the loop
+    short choice = 0;
+
+    // Start the application loop
+    do
+    {
+        //show the menu
+        system("cls");  // Clears the console screen
+        cout << "Menu\n" << endl;
+        cout << "1) Deposit" << endl;
+        cout << "2) Withdraw" << endl;
+        cout << "3) Check Balance" << endl;
+        cout << "4) Quick $40" << endl;
+        cout << "5) Exit" << endl;
+
+        // Get user input
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+
+        // Run code based on the user's choice
+        switch (choice)
+        {
+        case 1:
+            deposit(ptrBalance);  // Passing a pointer so only four bytes have to go across the system bus
+            break;
+        case 2:
+            withdrawal(ptrBalance, DAILY_LIMIT);    //Passing four byte pointer
+            break;
+        case 3:
+            // Show the balance
+            cout << fixed << setprecision(2) << "\nCurrent Balance: $" << balance << endl;
+            break;
+        case 4:
+            // Get a quick $40
+            withdrawal(ptrBalance, DAILY_LIMIT, 40.0f);
+            break;
+        case 5:
+            cout << "\nGoodbye" << endl;
+            break;
+        default:
+            cout << "\nError. Please select from the menu." << endl;
+            break;
+        }
+
+        // Pause
+        cout << "\nPress any key to continue...";
+        _getch();
+    } 
+    while (choice != 0);
+
+    //Now that the application is over, write the new balance to the file
+    ofstream oFile(FILENAME.c_str());
+    oFile << balance << endl;
+    oFile.close();
+
+    // Pause
+    cout << "\nPress any key to continue...";
+    _getch();
+    return 0;
+}
+
+// Make a deposit
+void deposit(double* ptrBalance)
+{
+    // get deposit and validate it
+    float deposit = 0.0f;
+
+    do
+    {
+        cout << "\nEnter deposit amount: ";
+        cin >> deposit;
+
+        if (cin.fail()) // Did they give us a character instead of a number?
+        {
+            cin.clear();   // Clears fail state
+            cin.ignore(INT16_MAX, '\n');    //Clears keyboard buffer
+            cout << "\nError. Please use numbers only.\n" << endl;
+            deposit = -1;   // Set deposit to a "bad" number
+            continue;   // Restart loop
+        }
+        else if (deposit < 0.0f)    //Check for negative number
+            cout << "\nError. Invalid deposit amount.\n" << endl;
+    } 
+    while (deposit < 0.0f);
+
+    *ptrBalance += deposit;     // Same as: *ptrBalance = *ptrBalance + deposit
+
+    cout << fixed << setprecision(2) << "\nCurrent ptrBalance: $" << *ptrBalance << endl;
+}
+
+// Make a Withdrawal
+void withdrawal(double* ptrBalance, float dailyLimit)
+{
+    // Get the withdrawal
+    float amount = 0.0f;
+    cout << "\nEnter withdrawal amount: ";
+    cin >> amount;
+
+    // Call the overload method that takes the balance, dailyLimit, and withdrawal amount
+    withdrawal(ptrBalance, dailyLimit, amount);
+}
+
+// Make a withdrawal - this overload accepts balance, dailyLimit, and withdrawal amount
+void withdrawal(double* ptrBalance, float dailyLimit, float amount)
+{
+    // Take away money from the account and show the balance
+    if (amount > dailyLimit)
+    {
+        cout << "\nError. Amount exceeds daily limit." << endl;
+    }
+    else if (amount > * ptrBalance)   //Notice the asterisk to dereference the pointer!
+    {
+        cout << "\nError. Insufficient funds." << endl;
+    }
+    else
+    {
+        *ptrBalance -= amount;  // Same as: *ptrBalance = *ptrBalance - amount
+        cout << "\nHere is your cash: $:" << amount << endl;
+    }
+    cout << fixed << setprecision(2) << "\nCurrent Balance: $" << *ptrBalance << endl;
+}
