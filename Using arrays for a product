@@ -1,0 +1,68 @@
+#include<iostream>
+#include <iomanip>
+#include <string>
+using namespace std;
+
+int main()
+{
+	const int jars = 7;
+	int sales[jars];
+	string Salsa[jars] = { "Mild", "Medium", "Hot", "Sweet", "Fruit", "Verde", "Zesty" };
+
+
+	// Create arrays
+
+	int totalJarsSold = 0;
+	int hiJarsSold = 0;
+	int lowJarsSold = 0;
+
+	// Input the number of jars sold
+
+	for (int i = 0; i < jars; i++)
+	{
+		cout << "Jars sold last month of " << Salsa[i] << ": ";
+		cin >> sales[i];
+
+		while (sales[i] < 0)
+		{
+			cout << "Jars sold must be 0 or more.  Please re-enter: ";
+			cin >> sales[i];
+		}
+	}
+
+
+	// Get total sales and high and low selling products
+	for (int i = 0; i < jars; i++)
+	{
+		totalJarsSold += sales[i];
+		if (sales[i] > sales[hiJarsSold])
+			hiJarsSold = i;
+		if (sales[i] < sales[lowJarsSold])
+			lowJarsSold = i;
+	}
+
+
+	// Produce the sales report
+	cout << endl << endl;
+	cout << "     Salsa Sales Report \n\n";
+	cout << "Name              Jars Sold \n";
+	cout << "____________________________\n";
+
+	// Display the name and jars sold of each type.
+	for (int i = 0; i < jars; i++)
+	{
+		cout << Salsa[i]
+			<< ":   " << sales[i]
+			<< endl;
+	}
+
+
+	// code that prints the salsa names and number jars sold
+
+	cout << "\nTotal Sales:" << setw(15) << totalJarsSold << endl;
+	cout << "High Seller: " << Salsa[hiJarsSold] << endl;
+	cout << "Low Seller : " << Salsa[lowJarsSold] << endl;
+
+	system("pause");
+	return 0;
+}
