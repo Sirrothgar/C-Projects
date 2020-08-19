@@ -1,0 +1,236 @@
+Wings.h
+
+#pragma once
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Wings
+{
+private:
+
+    //attributes
+    string flavor;
+    short numPieces;
+
+public:
+    //constructors
+    Wings(string flavor = "unknown", short numberOfPieces = 0);
+    ~Wings(void);
+
+    //behaviors
+    Wings operator+(const Wings secondWings) const;         //operator states: wings3 = wings1 + wings2;
+    Wings operator-(const Wings secondWings) const;         //operator states: wings3 = wings1 - wings2;
+    Wings operator-(void);                                      //operator states: wings2 = -wings1; (negative)
+    Wings& operator++(void);                                    //operator states: ++wings; increments by 1
+    Wings operator++(int);                                  //operator states: wings++
+    Wings& operator=(const Wings& equalWings);              //operator states: Wings w2 = w1;
+
+    //overload the input stream operator
+    //cin >> wings;
+    friend istream& operator>>(istream &is, Wings &obj);
+
+    //overload the output stream operator
+    //cout << wings << endl;
+    friend ostream& operator<<(ostream &os, Wings &ogj);
+
+    //accessors and mutators
+    string getFlavor();
+    void setFlavor(string flavor);
+
+    short getNumberOfPieces();
+    void setNumberOfPieces(short numberOfPieces);
+};
+
+Wings.cpp
+
+#include "Wings.h"
+
+
+//constructors
+Wings::Wings(string flavor, short numberOfPieces)
+{
+    setFlavor(flavor);
+    setNumberOfPieces(numberOfPieces);
+}
+
+Wings::~Wings()
+{
+    // No dynamic objects to destroy
+}
+
+//behaviors
+Wings Wings::operator+(const Wings secondWings) const
+{
+    //create the wings object to return
+    Wings thirdWings;
+
+    //Tell C++ how to combine the wing attributes
+    thirdWings.numPieces = this->numPieces + secondWings.numPieces;
+    if (this->flavor != secondWings.flavor)
+        thirdWings.flavor = this->flavor + " and " + secondWings.flavor;
+    else
+        thirdWings.flavor = this->flavor;
+
+    //return the new combined wings
+    return thirdWings;
+}
+
+Wings Wings::operator-(const Wings secondWings) const
+{
+    Wings thirdWings;
+    
+    //Tell C++ how to subtract the Wings attribute
+    thirdWings.numPieces = this->numPieces - secondWings.numPieces;
+    string full = this->flavor;    //current flavor
+
+    short position = full.find("and", 0);
+    if (position > 0)
+        thirdWings.flavor = full.substr(0, position - 1);
+    else
+        thirdWings.flavor = this->flavor;
+    //return the new, changed wings object
+    return thirdWings;
+}
+
+Wings Wings::operator-(void)
+{
+    numPieces = -1 * numPieces;         //can be written as: numPieces = -numPieces
+
+    //flavor = ??
+
+    return *this;
+}
+
+Wings& Wings::operator++(void)
+{
+    ++numPieces;
+
+    //return incremented wing objects
+    return *this;
+}
+
+Wings Wings::operator++(int)
+{
+    //save the old state values (old values)
+    Wings temp = *this;     //save the old state
+
+    //Tell C++ how to post-increment the current state
+    ++(*this);
+
+    //return the OLD state (old values)
+    return temp;
+}
+
+Wings& Wings::operator=(const Wings& equalWings)
+{
+    if (this != &equalWings)        //confrim that this is NOT the same object
+        this->flavor = equalWings.flavor;
+        this->numPieces = equalWings.numPieces;
+
+    //return the new object
+    return *this;
+}
+
+istream& operator>>(istream &is, Wings &obj)
+{
+    //append the input stream
+    cout << "Enter the Wings flavor: ";
+    getline(is, obj.flavor);
+    cout << "Enter the number of wings: ";
+    is >> obj.numPieces;
+
+    //return the input stream so more stuff can be appended
+    return is;
+}
+
+ostream& operator<<(ostream &os, Wings &obj)
+{
+    //append our information to a current output stream
+    os << "Wings flavor: " << obj.flavor << ", Number of Wings: " << obj.numPieces;
+
+    //return the output stream so more stuff can be appened
+    return os;
+}
+
+//accessors and mutators
+string Wings::getFlavor(void)
+{
+    return flavor;
+}
+
+void Wings::setFlavor(string flavor)
+{
+    if (flavor.length() > 0)
+        this->flavor = flavor;
+    else
+        this->flavor = "unknown";
+}
+
+short Wings::getNumberOfPieces()
+{
+    return numPieces;
+}
+
+void Wings::setNumberOfPieces(short numberOfPieces)
+{
+    if (numberOfPieces > 0)
+        numPieces = numberOfPieces;
+    else
+        numPieces = 0;
+}
+
+Main.cpp
+
+#include <iostream>
+#include <string>
+#include <conio.h>
+#include "Wings.h"
+using namespace std;
+
+int main()
+{
+    //Create two wings objects
+    Wings w1("Honey Hot", 6);
+    Wings w2("BBQ", 6);
+
+    //test the overloaded operators
+    Wings w3 = w1 + w2;
+
+    cout << "Combined wings: " << w3.getFlavor() << ", " << w3.getNumberOfPieces() << endl;
+
+    Wings w4 = w3 - w2;
+
+    cout << "Smaller wings: " << w4.getFlavor() << ", " << w4.getNumberOfPieces() << endl;
+
+    Wings w5 = -w4;
+
+    cout << "Negated wings: " << w4.getFlavor() << ", " << w4.getNumberOfPieces() << endl;
+
+    w5 = -w5;
+    ++w5;
+
+    cout << "Pre-Incremented wings: " << w5.getFlavor() << ", " << w5.getNumberOfPieces() << endl;
+
+    w5++;
+
+    cout << "Post-Incremental wings: " << w5.getFlavor() << ", " << w5.getNumberOfPieces() << endl;
+
+    Wings w6 = w5;
+
+    cout << "Equal wings: " << w6.getFlavor() << ", " << w6.getNumberOfPieces() << endl;
+
+    Wings w7;
+    cin >> w7;
+
+    cout << "Input stream wings: " << w7.getFlavor() << ", " << w7.getNumberOfPieces() << endl;
+
+    cout << "Output stream wings: " << w7 << endl;
+
+    //pause
+    cout << "\nPress any key to continue...";
+    _getch();
+
+    return 0;
+
+}
