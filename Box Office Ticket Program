@@ -1,0 +1,28 @@
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+int main()
+{
+    cout << "Box Office Program:\n";
+    double totalAdult, totalChild, grossProfit, netProfit, distributorAmt;
+    int adultTkts, childTkts;
+
+    cout << "Please enter the number of child tickets: ";
+    cin >> childTkts;
+    cout << "Please enter the number of adult Tickets: ";
+    cin >> adultTkts;
+    cout << "\n";
+
+    totalChild = 6.00 * childTkts;
+    totalAdult = 10.00 * adultTkts;
+    grossProfit = totalAdult + totalChild;
+    netProfit = grossProfit * 0.2;
+    distributorAmt = grossProfit - netProfit;
+
+    cout << fixed << setprecision(2);
+    cout << "Gross Box Office profits: $" << setw(8) << grossProfit << endl;
+    cout << "Net Box Office profits: $" << setw(8) << netProfit << endl;
+    cout << "Amount paid to the distributor: $" << setw(8) << distributorAmt << endl;
+}
