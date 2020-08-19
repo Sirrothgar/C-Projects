@@ -1,0 +1,293 @@
+Person.h
+
+#pragma once
+#include <string>
+#include <fstream>
+#include "Glasses.h"
+using namespace std;
+
+class Person
+{
+private:
+	//attributes
+	string name;
+	string SSN;
+	Glasses myGlasses;
+
+public:
+	//constructor and destructor
+	Person(void);
+	Person(string name, string SSN, Glasses theGlasses);
+	~Person(void);
+
+	//behaviors
+	string toString(void);
+	string writeToFile(void);
+	string readFromFile(void);
+
+	//accessor and mutators
+	string getName(void);
+	void setName(string name);
+	
+	string getSSN(void);
+	void setSSN(string SSN);
+	
+	Glasses getMyGlasses(void);
+	void setMyGlasses(Glasses theGlasses);
+
+};
+
+Person.cpp
+
+#include "Person.h"
+
+Person::Person()
+{
+	name = "unknown";
+	SSN = "unknown";
+}
+
+Person::Person(string name, string SSN, Glasses theGlasses)
+{
+	setName(name);
+	setSSN(SSN);
+	setMyGlasses(theGlasses);
+}
+Person::~Person(void)
+{
+
+}
+
+//behaviors
+string Person::toString(void)
+{
+	return "Name: " + name + ", SSN: " + SSN + ", Glasses: [" + myGlasses.toString() + "]";
+}
+
+string Person::writeToFile(void)
+{
+	//write the state of the person to the file using the persons name
+	string fileName = name + ".txt";
+	ofstream oFile(name);	//defaults to ios::out (destroys prior data) -- ios::app (appends the data)
+
+	oFile << name << endl;
+	oFile << SSN << endl;
+	oFile << myGlasses.getPrescription() << endl;
+	oFile << myGlasses.getColor() << endl;
+	oFile.close();
+
+	//tell user that the data was written to file
+	return name + "'s data was written to the file";
+}
+
+string Person::readFromFile(void)
+{
+	//read from the file
+	string fileName = name + ".txt";
+	ifstream iFile(fileName);
+
+	if (!iFile.is_open())	// ! means NOT, same as writing the code as --> if(iFile.is_open() == false);
+	{
+		return "Error. File cannot be opened. Does it exist?";
+	}
+	else
+	{
+		getline(iFile, name);		//read into this objects name attribute
+		getline(iFile, SSN);		//read into this objects SSN attribute
+
+		string color = "";
+		getline(iFile, color);		//read the glasses color
+		float pres = 0.0f;
+		iFile >> pres;				//read the prescription
+		this->setMyGlasses(Glasses(color, pres));
+		iFile.ignore(1);			//ignores and use up the '\n' (newline)
+
+		iFile.close();
+
+		//tell the suer that the data has been loaded
+		return name + "'s data has been loaded from the file.";
+	}
+}
+
+//accessor and mutators
+string Person::getName(void)
+{
+	return name;
+}
+
+void Person::setName(string name)
+{
+	if (name.length() > 0)
+		this->name = name;
+	else
+		this->name = "unknown";
+}
+
+string Person::getSSN(void)
+{
+	return SSN;
+}
+
+void Person::setSSN(string SSN)
+{
+	if (SSN.length() == 9 || SSN.length() == 11)
+		this->SSN = SSN;
+	else
+		this->SSN = "unknown";
+}
+
+Glasses Person::getMyGlasses(void)
+{
+	return myGlasses;
+}
+
+void Person::setMyGlasses(Glasses theGlasses)
+{
+	this->myGlasses = theGlasses;
+}
+
+Glasses.h
+
+#pragma once
+#include <string>
+using namespace std;
+
+class Glasses
+{
+private:
+	//attributes
+	string color;
+	float prescription;
+
+public:
+	//constructor and destructor
+	Glasses(void);
+	Glasses(string color, float prescription);
+	~Glasses(void);
+
+	//behaviors
+	string toString(void);
+
+	//accessor and mutators
+	string getColor(void);
+	void setColor(string color);
+	float getPrescription(void);
+	void setPrescription(float prescription);
+
+};
+
+
+Glasses.cpp
+
+#include "Glasses.h"
+
+Glasses::Glasses()
+{
+	color = "unknown";
+	prescription = 0.0f;
+}
+
+Glasses::Glasses(string color, float prescription)
+{
+	setColor(color);
+	setPrescription(prescription);
+}
+
+Glasses::~Glasses(void)
+{
+
+}
+
+//behaviors
+string Glasses::toString(void)
+{
+	string strPrescription = to_string(prescription);
+	strPrescription = strPrescription.substr(0, 4);		//substr marks locations for start and end of string outputs (0 = start point, 4 = stop point)
+	return "Color: " + color + ", Prescription: " + strPrescription;
+}
+
+//accessor and mutators
+string Glasses::getColor(void)
+{
+	return color;
+}
+
+void Glasses::setColor(string color)
+{
+	if (color.length() > 0)
+		this->color = color;
+	else
+		this->color = "unknown";
+}
+
+float Glasses::getPrescription(void)
+{
+	return prescription;
+}
+
+void Glasses::setPrescription(float prescription)
+{
+	if (prescription > 0.0f)
+		this->prescription = prescription;
+	else
+		this->prescription = 0.0f;
+}
+
+
+Main.cpp
+
+#include <iostream>
+#include <conio.h>
+#include <string>
+#include "Person.h"
+using namespace std;
+
+/// Entry point to application
+int main()
+{
+    //create a default person object
+    Person p1;
+
+    cout << p1.toString() << endl;
+
+    //change the values by setting the name, SSN, and Glasses object
+    p1.setName("Bob");
+    p1.setSSN("222-22-2222");
+    Glasses g1("Black", 1.75f);
+    p1.setMyGlasses(g1);
+
+    cout << p1.toString() << endl;
+
+    //change the glasses using an anonymous Glasses object
+    p1.setMyGlasses(Glasses("Brown", 2.25f));
+
+    cout << "\n" << p1.toString() << endl;
+
+    //show the color only
+    cout << "\nColor: " << p1.getMyGlasses().getColor() << endl;
+
+    //show the prescription only
+    cout << "\nPresription: " << p1.getMyGlasses().getPrescription() << endl;
+
+    //write the person objects state to the file
+    string result = p1.writeToFile();
+
+    cout << "\n" << result << endl;
+
+    //create a default object, change the name, and read the data into the new object
+    Person newPerson;
+    newPerson.setName("Bob");
+    result = newPerson.readFromFile();
+    cout << "\n" << result << endl;
+
+    //display the data that was read from the file
+    cout << "\n\nPerson object with data from the file:\n" << endl;
+    cout << newPerson.toString() << endl;
+
+    //Pause
+    cout << "\nPress any key to continue...";
+
+    _getch();
+
+    return 0;
+}
