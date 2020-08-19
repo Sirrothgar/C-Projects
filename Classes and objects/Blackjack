@@ -1,0 +1,351 @@
+Card.h
+
+#pragma once
+
+#include <ctime>
+#include <stdlib.h>
+#include <string>
+using namespace std;
+
+class Card
+{
+private:
+	// attributes
+	char suit;
+	char face;
+	short value;
+
+	static bool randomizerSeeded;  //class-wide variable
+
+public:
+	//constructor and destructor
+	Card();
+	~Card();
+
+	//behaviors
+
+	string toString();
+	bool flipAceToOne();
+	
+	//accessors and mutators
+	inline char getSuit() { return suit; }
+	inline char getFace() { return face; }
+	inline short getValue() { return value; }
+};
+
+Card.cpp
+
+#include "Card.h"
+
+bool Card::randomizerSeeded = false;
+
+Card::Card()
+{
+	if (!randomizerSeeded)
+	{
+		srand(unsigned int(time(0)));
+		randomizerSeeded = true;
+	}
+	//Create a random number from 3 to 6 for the card suit
+	short min = 3;
+	short max = 6;
+	suit = rand() % (max - min + 1) + 3;
+
+	//Create a random number from 2 to 14 -- Cards are 2 to Ace
+	min = 2;
+	max = 14;
+	short number = rand() % (max - min + 1) + min;
+
+
+	if (number >= 2 && number <= 9)
+	{
+		value = number;
+		face = number + 48;
+	}
+	else if (number == 10)
+	{
+		value = number;
+		face = 'T';
+	}
+	else if (number == 11)
+	{
+		value = 10;
+		face = 'J';
+	}
+	else if (number == 12)
+	{
+		value = 10;
+		face = 'Q';
+	}
+	else if (number == 13)
+	{
+		value = 10;
+		face = 'K';
+	}
+	else if (number == 14)
+	{
+		value = 10;
+		face = 'A';
+	}
+	else
+	{
+		value = -1;
+		face = 'E';
+	}
+
+
+}
+
+Card::~Card()
+{
+
+}
+
+string Card::toString()
+{
+	string output = " ";
+	output += suit;
+	output += face;
+	return output;
+}
+
+bool Card::flipAceToOne()
+{
+	if (value == 11)
+	{
+		value = 1;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+Main.cpp
+
+#include <iostream>
+#include <conio.h>
+#include <string>
+#include "Card.h"
+#include <vector>
+using namespace std;
+
+//Prototypes
+string showCards(vector<Card> cards);
+short sumCardValues(vector<Card> cards);
+void playHand(short &cash);
+
+/// Entry point to application
+int main()
+{
+    //Set the starting cash and display the player
+    short cash = 100;
+    cout << "Welcome to BlackJack Extreme!" << endl;
+    cout << "\nYou are starting out with $" << cash << endl;
+   
+    //Pause
+    cout << "\nPress any key to continue...";
+
+    _getch();
+
+    //Create loop variable
+    short choice = 0;
+
+    //run application loop
+    do
+    {
+        //show the menu and players choice
+        system("cls");  //Clear the console
+        cout << "Menu\n" << endl;
+        cout << "1) Play a hand" << endl;
+        cout << "2) Show current cash balance" << endl;
+        cout << "3) Exit" << endl;
+        
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        //Switch based on choice
+        switch (choice)
+        {
+        case 1: 
+            playHand (cash);
+            break;
+        case 2:
+            cout << "\nYour current cash balance: $" << cash << endl;
+            break;
+        case 3:
+            cout << "\nThank you for playing Extreme BlackJack!" << endl;
+            cout << "\nYour final cash position is: $" << cash << endl;
+            break;
+        default:
+            cout << "\nError. Please select from the menu." << endl;
+            break;
+        }
+
+        //Pause
+        cout << "\nPress any key to continue...";
+        _getch();
+    } while (choice != 3);
+
+    return 0;
+}
+
+/// Show the cards in the vector (resizable array)
+string showCards(vector<Card> cards)
+{
+    string output = " ";
+
+    for (Card c : cards)
+    {
+        output += c.toString() + " ";
+    }
+
+    return output;
+}
+
+///Add up the total value of the cards
+short sumCardValues(vector<Card> cards)
+{
+    short total = 0;
+
+    for (Card c : cards)
+    {
+        total += c.getValue();
+    }
+
+    return total;
+}
+
+///Play a single hand of BlackJack
+void playHand(short &cash)
+{
+    //Create two array lists that can hold card objects
+    vector<Card> dealerCards;
+    vector<Card> playerCards;
+    short dealerCardsTotal = 0;
+    short playerCardsTotal = 0;
+
+    //Get bet amount
+    short bet = 0;
+    cout << "\nEnter bet amount: ";
+    cin >> bet;
+
+    //Create two cards for dealer and show first one
+    Card card1;
+    Card card2;
+    dealerCards.push_back(card1);
+    dealerCards.push_back(card2);
+    dealerCardsTotal = sumCardValues(dealerCards);
+
+    cout << "\nDealer is showing: " << dealerCards[0].toString() << endl;
+
+    //Create two cards for the player and show them both
+    playerCards.push_back(Card());  //Create the card and put it directly into the array list
+    playerCards.push_back(Card());
+    playerCardsTotal = sumCardValues(playerCards);
+
+    cout << "\nHere are your cards: " << showCards(playerCards) << endl;
+
+    //Give cards to the player until they stand ("S")
+    char answer = '?';
+
+    do
+    {
+        cout << "\nDo you want to hit or stand (H/S)? ";
+        cin.sync(); //flush the input stream (keyboard buffer)
+        cin >> answer;
+        cin.sync();
+
+        if (toupper(answer) == 'H')
+        {
+            //Give a card to the player
+            Card c;
+            cout << "\nYou were dealt this card: " << c.toString() << endl;
+            playerCards.push_back(c);  //Add card to players hand
+
+            //sum up the card values
+            playerCardsTotal = sumCardValues(playerCards);
+
+            //Did the player bust?
+            if (playerCardsTotal > 21)
+            {
+                //Do you have an Ace that can be dropped to a 1 value?
+                for (Card c : playerCards)
+                {
+                    if (c.getValue() == 11)
+                    {
+                        cout << "\nYour total is: " << playerCardsTotal << endl;
+                        c.flipAceToOne();
+                        cout << "\nHowever you have an Ace that was converted to a '1' value" << endl;
+                        playerCardsTotal = sumCardValues(playerCards);
+                        cout << "\nYour new total is: " << playerCardsTotal;
+
+                        //If we are good now, break out of the loop. Otherwise keep looping and looking for Aces
+                        if (playerCardsTotal <= 21)
+                            break;
+                    }
+                }
+            }
+
+            //show the cards and the total
+            cout << "\nHere are your cards: " << showCards(playerCards) << endl;
+            cout << "\nYour total is: " << playerCardsTotal << endl;
+
+            //If busted, stop the loop
+            if (playerCardsTotal > 21)
+                answer = 'S';
+        }
+    } while (toupper(answer) != 'S');
+
+    //If playersCardTotal is more than 21, player busted so take money away
+    if (playerCardsTotal > 21)
+    {
+        cout << "\nYou busted!" << endl;
+        cash = cash - bet;
+    }
+    else
+    {
+        do
+        {
+            if (dealerCardsTotal < 17)
+            {
+                Card c;
+                cout << "\nDealer was dealt: " << c.toString() << endl;
+                dealerCards.push_back(c);  //Add the card to dealers hand
+                cout << "\nDealer Cards: " << showCards(dealerCards) << endl;
+                dealerCardsTotal = sumCardValues(dealerCards);
+                cout << "Dealer Total: " << dealerCardsTotal << endl;
+            }
+        } 
+        while (dealerCardsTotal < 17);
+
+        //show the cards for the dealer and the player
+        cout << "\nYour cards: " << showCards(playerCards) << " (" << playerCardsTotal << ")" << endl;
+        cout << "\nDealers cards: " << showCards(dealerCards) << " (" << dealerCardsTotal << ")" << endl;
+
+        //who wins?
+        if (dealerCardsTotal > 21)
+        {
+            cout << "\nDealer busted!" << endl;
+            cash = cash + bet;
+        }
+        else if (dealerCardsTotal > playerCardsTotal)
+        {
+            cout << "\nDealer wins." << endl;
+            cash = cash - bet;
+        }
+        else if (playerCardsTotal > dealerCardsTotal)
+        {
+            cout << "\nYou win!" << endl;
+            cash = cash + bet;
+        }
+        else
+        {
+            cout << "\nYou pushed the dealer (tie)." << endl;
+        }
+    }
+
+    //show the current cash position
+    cout << "\nYour current cash balance: $" << cash << endl;
+}
