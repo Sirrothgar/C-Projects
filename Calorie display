@@ -1,0 +1,17 @@
+#include<iostream>	
+using namespace std;
+
+//Declare variable	
+const double calories = 3.9;
+
+int main() {
+	
+	int i;
+	
+	for (i = 10; i <= 30; i = i + 5) {         //Minutes start at 10 and increase by 5 until 30 minutes	
+	
+		cout << i * calories << " calories were burned after " << i << " minutes.\n";
+	}
+
+	return 0;
+}
