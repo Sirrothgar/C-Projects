@@ -1,0 +1,30 @@
+#include <iostream>
+
+using namespace std;
+
+int main() 
+{
+ /* User will input two numbers
+    The program will display the smallest number*/
+
+//The two numbers for user to select
+    int numberA;
+    int numberB;
+
+//Prompt user to enter numbers
+    cout << "Please enter the first number: ";
+    cin >> numberA;
+    cout << "Please enter the second number: ";
+    cin >> numberB;
+
+//Determine smaller number and display smaller number
+    if (numberA > numberB)
+    {
+        cout << "The smaller number is: " << numberB;
+    }
+    else {
+        cout << "The smaller number is: " << numberA;
+    
+    }
+    return 0;
+}
