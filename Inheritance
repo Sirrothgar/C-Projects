@@ -1,0 +1,460 @@
+Employee.h
+
+#pragma once
+#include <string>
+#include <iomanip>
+using namespace std;
+
+class Employee
+{
+private:
+	//attributes
+	string fName;
+	string lName;
+	string ssn;
+	string phone;
+	
+public:
+	//constructor and destructor
+	Employee(void);
+	Employee(string fName, string lName, string ssn, string phone);
+	~Employee(void);
+
+	//behaviors
+	virtual float CalculatePay(void);
+	virtual string toString(void);
+
+	//accessor and mutators
+	string getFName(void);
+	void setFName(string fName);
+
+	string getLName(void);
+	void setLName(string lName);
+
+	string getSsn(void);
+	void setSsn(string ssn);
+
+	string getPhone(void);
+	void setPhone(string phone);
+
+	float getCalculatePay(void);
+	void setCalculatePay(float calculatePay);
+
+};
+
+Employee.cpp
+
+#include "Employee.h"
+
+Employee::Employee(void)
+{
+	fName = "unknown";
+	lName = "unknown";
+	ssn = "000-00-0000";
+	phone = "000-000-0000";
+}
+
+Employee::Employee(string fName, string lName, string ssn, string phone)
+{
+	setFName(fName);
+	setLName(lName);
+	setSsn(ssn);
+	setPhone(phone);
+}
+
+Employee::~Employee(void)
+{
+	
+}
+
+//behaviors
+float Employee::CalculatePay(void)
+{
+	return 0.0f;
+}
+
+string Employee::toString(void)
+{
+	return "";
+}
+
+//accessor and mutators
+string Employee::getFName(void)
+{
+	return fName;
+}
+
+void Employee::setFName(string fName)
+{
+	if (fName.length() > 0)
+		this->fName = fName;
+	else
+		this->fName = "unknown";
+}
+
+string Employee::getLName(void)
+{
+	return lName;
+}
+
+void Employee::setLName(string lName)
+{
+	if (lName.length() > 0)
+		this->lName = lName;
+	else
+		this->lName = "unknown";
+}
+
+string Employee::getSsn(void)
+{
+	return ssn;
+}
+
+void Employee::setSsn(string ssn)
+{
+	if (ssn.length() == 9 || ssn.length() == 11)
+		this->ssn = ssn;
+	else
+		this->ssn = "000-00-0000";
+}
+
+string Employee::getPhone(void)
+{
+	return phone;
+}
+void Employee::setPhone(string phone)
+{
+	if (phone.length() == 10 || phone.length() == 12)
+		this->phone = phone;
+	else
+		this->phone = "000-000-0000";
+}
+
+Hourly.h
+
+#pragma once
+#include "Employee.h"
+#include <string>
+using namespace std;
+
+class Hourly: public Employee
+{
+private:
+	//attributes
+	float hours;
+	float rate;
+
+public:
+	//constructor and destructor
+	Hourly(void);
+	Hourly(string fName, string lName, string ssn, string phone, float hours, float rate);
+	virtual~Hourly();
+
+	//behaviors
+	float CalculatePay(void);
+	string toString(void);
+
+	//accessor and mutators
+	float getHours(void);
+	void setHours(float hours);
+
+	float getRate(void);
+	void setRate(float rate);
+};
+
+Hourly.cpp
+
+#include "Hourly.h"
+
+Hourly::Hourly(void) : Employee()
+{
+	hours = 0.0f;
+	rate = 0.0f;
+}
+
+Hourly::Hourly(string fName, string lName, string ssn, string phone, float hours, float rate)
+	: Employee(fName, lName, ssn, phone)
+{
+	setHours(hours);
+	setRate(rate);
+}
+
+Hourly::~Hourly()
+{
+
+}
+
+//behaviors
+float Hourly::CalculatePay(void)
+{
+	float pay = 0.0f;
+
+	if (hours > 40.0f)
+	{
+		float basePay = 40.0f * rate;
+		float overtime = (hours - 40.0f) * rate * 1.5f;
+		pay = basePay + overtime;
+	}
+	else
+	{
+		pay = hours * rate;
+	}
+
+	return pay;
+}
+
+string Hourly::toString(void)
+{
+	return "Hours: " + to_string(hours) + "\n" + ", rate: " + to_string(rate) + "\n";
+}
+
+//accessor and mutators
+float Hourly::getHours(void)
+{
+	return hours;
+}
+
+void Hourly::setHours(float hours)
+{
+	if (hours > 0)
+		this->hours = hours;
+	else
+		this->hours = 0;
+}
+
+float Hourly::getRate(void)
+{
+	return rate;
+}
+
+void Hourly::setRate(float rate)
+{
+	if (rate > 0)
+		this->rate = rate;
+	else
+		this->rate = 0.0f;
+}
+
+Salary.h
+
+#pragma once
+#include "Employee.h"
+#include <string>
+using namespace std;
+
+class Salary: public Employee
+{
+private:
+	//attributes
+	double annualSalary;
+
+public:
+	//constructor and destructor
+	Salary(void);
+	Salary(string fName, string lName, string ssn, string phone, double annualSalary);
+	virtual~Salary(void);
+
+
+	//behaviors
+	float calculatePay(void);
+	string toString(void);
+
+	//accessor and mutators
+	double getAnnualSalary(void);
+	void setAnnualSalary(double AnnualSalary);
+
+};
+
+Salary.cpp
+
+#include "Salary.h"
+
+Salary::Salary(void) : Employee()
+{
+	annualSalary = 0;
+}
+
+Salary::Salary(string fName, string lName, string ssn, string phone, double annualSalary)
+	: Employee(fName, lName, ssn, phone)
+{
+	setAnnualSalary(annualSalary);
+}
+
+Salary::~Salary(void)
+{
+
+}
+
+
+//behaviors
+float Salary::calculatePay(void)
+{
+	return annualSalary / 52.0;
+}
+
+string Salary::toString(void)
+{
+	return "AnnualSalary: $" + to_string(annualSalary);
+}
+
+//accessor and mutators
+double Salary::getAnnualSalary(void)
+{
+	return annualSalary;
+}
+
+void Salary::setAnnualSalary(double AnnualSalary)
+{
+	if (annualSalary > 0)
+		this->annualSalary = annualSalary;
+	else
+		this->annualSalary = 0;
+
+}
+
+Manager.h
+
+#pragma once
+#include "Salary.h"
+#include <string>
+using namespace std;
+
+class Manager: public Salary
+{
+private:
+	//attributes
+	double bonus;
+
+public:
+	//constructor and destructor
+	Manager(void);
+	Manager(string fName, string lName, string ssn, string phone, double annualSalary, double bonus);
+	virtual~Manager(void);
+
+	//behaviors
+	float calculatePay(void);
+	string toString(void);
+
+	//accessor and mutators
+	double getBonus(void);
+	void setBonus(double bonus);
+
+};
+
+Manager.cpp
+
+#include "Manager.h"
+
+Manager::Manager(void) : Salary()
+{
+	bonus = 0.0;
+}
+
+Manager::Manager(string fName, string lName, string ssn, string phone, double annualSalary, double bonus)
+	: Salary(fName, lName, ssn, phone, annualSalary)
+{
+	setBonus(bonus);
+}
+
+Manager::~Manager(void)
+{
+
+}
+
+//behaviors
+float Manager::calculatePay(void)
+{
+	return float(Salary::calculatePay() + (bonus / 52.0));
+}
+
+string Manager::toString(void)
+{
+	return "Bonus: " + to_string(bonus);
+}
+
+//accessor and mutators
+double Manager::getBonus(void)
+{
+	return bonus;
+}
+
+void Manager::setBonus(double bonus)
+{
+	if (bonus > 0 && bonus <- 1000000)
+		this->bonus = bonus;
+	else
+		this->bonus = 0.0f;
+}
+
+Main.cpp
+
+#include <iostream>
+#include <conio.h>
+#include <string>
+#include "Employee.h"
+#include "Salary.h"
+#include "Manager.h"
+#include "Hourly.h"
+using namespace std;
+
+//prototype
+void displayEmployee(Employee* emp);
+
+/// Entry point to application
+int main()
+{
+   //Create some objects
+    Hourly hrly("Brian", "Rothrock", "123-45-6789", "315-555-1234", 15.0f, 42.3f);
+    Salary sal; //calls the default constructor
+    Manager mgr("Brad", "Rothrock", "987-65-4321", "315-555-4321", 75000, 25000);
+
+    //display Employees
+    //Use polymorphism to show employee information
+    cout << "Size of Hourly Employee: " << sizeof(hrly) << endl;
+    cout << "Size of address(pointer): " << sizeof(&hrly) << endl;
+    cout << endl;
+
+    displayEmployee(&hrly);
+    displayEmployee(&sal);
+    displayEmployee(&mgr);
+
+    //Pause
+    cout << "\nPress any key to continue...";
+
+    _getch();
+
+    return 0;
+}
+
+///Display the Employee object State
+void displayEmployee(Employee* emp)
+{
+    //show the objects information
+    cout << "Name: " << emp->getFName() << " " << emp->getLName() << endl;
+    cout << "SSN: " << emp->getSsn() << endl;
+    cout << "Phone: " << emp->getPhone() << endl;
+    cout << "Weekly Pay: $" << emp->CalculatePay() << endl;
+
+    //get child specific values
+    //check to see if it is a child
+    Manager* tempMgr = dynamic_cast<Manager*>(emp);
+    if (tempMgr != NULL)
+    {
+        cout << "Bonus: $" << tempMgr->getBonus() << endl;
+    }
+
+    Salary* tempSal = dynamic_cast<Salary*>(emp);
+    if (tempSal != NULL)
+    {
+        cout << "Salary: $" << tempSal->getAnnualSalary() << endl;
+    }
+
+    Hourly* tempHrly = dynamic_cast<Hourly*>(emp);
+    if (tempHrly != NULL)
+    {
+        cout << "Hours: $" << tempHrly->getHours() << endl;
+        cout << "Rate: $" << tempHrly->getRate() << endl;
+    }
+
+    cout << endl;
+}
